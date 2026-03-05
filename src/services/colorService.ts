@@ -124,8 +124,43 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
         const min = Math.min(r, g, b);
         const delta = max - min;
         
-        const s = max === 0 ? 0 : delta / max; // Saturation (0-1)
-        const v = max / 255;                   // Brightness (0-1)
+        let h = 0;
+        if (delta !== 0) {
+          if (max === r) h = 60 * (((g - b) / delta) % 6);
+          else if (max === g) h = 60 * (((b - r) / delta) + 2);
+          else h = 60 * (((r - g) / delta) + 4);
+        }
+        if (h < 0) h += 360;
+
+        let s = max === 0 ? 0 : delta / max; // Saturation (0-1)
+        let v = max / 255;                   // Brightness (0-1)
+        
+        // User rule: if hue is between 280 and 350 (pink/purple range), 
+        // set Saturation and Brightness to exactly 30% (0.3) to avoid clashing with icons.
+        if (h > 280 && h < 350) {
+          s = 0.3;
+          v = 0.3;
+          // Update RGB values for the final result if this centroid is picked
+          const i = Math.floor(h / 60);
+          const f = h / 60 - i;
+          const p = v * (1 - s);
+          const q = v * (1 - f * s);
+          const t = v * (1 - (1 - f) * s);
+          let nr = 0, ng = 0, nb = 0;
+          switch (i % 6) {
+            case 0: nr = v, ng = t, nb = p; break;
+            case 1: nr = q, ng = v, nb = p; break;
+            case 2: nr = p, ng = v, nb = t; break;
+            case 3: nr = p, ng = q, nb = v; break;
+            case 4: nr = t, ng = p, nb = v; break;
+            case 5: nr = v, ng = p, nb = q; break;
+          }
+          centroids[j][0] = nr * 255;
+          centroids[j][1] = ng * 255;
+          centroids[j][2] = nb * 255;
+        }
+
+        const [finalR, finalG, finalB] = centroids[j];
         
         // Base score from frequency (Percentage of pixels in this cluster)
         const frequency = counts[j] / pixels.length;
@@ -156,9 +191,9 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
         let minDistanceToForbidden = Infinity;
         for (const f of forbiddenColors) {
           const dist = Math.sqrt(
-            Math.pow(r - f[0], 2) + 
-            Math.pow(g - f[1], 2) + 
-            Math.pow(b - f[2], 2)
+            Math.pow(finalR - f[0], 2) + 
+            Math.pow(finalG - f[1], 2) + 
+            Math.pow(finalB - f[2], 2)
           );
           if (dist < minDistanceToForbidden) minDistanceToForbidden = dist;
         }

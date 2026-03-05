@@ -40,7 +40,7 @@ export function BioLinks({ lightMode }: { lightMode?: boolean }) {
           className="flex items-center h-[29px] w-fit px-3 rounded-full gap-1 border-[0.5px] backdrop-blur-md"
           style={{ 
             borderColor: lightMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.1)',
-            backgroundColor: lightMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)'
+            backgroundColor: lightMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
           }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -65,7 +65,7 @@ export function BioLinks({ lightMode }: { lightMode?: boolean }) {
           className="flex items-center h-[29px] w-fit px-3 rounded-full gap-1 border-[0.5px] backdrop-blur-md"
           style={{ 
             borderColor: lightMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.1)',
-            backgroundColor: lightMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)'
+            backgroundColor: lightMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
           }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">

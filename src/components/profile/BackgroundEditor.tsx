@@ -97,6 +97,34 @@ export function BackgroundEditor({ onSave, onClose }: BackgroundEditorProps) {
               <div
                 className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
                 onClick={() => {
+                  setSelectedImage(`https://picui.ogmua.cn/s1/2026/03/05/69a97288f2c99.webp`);
+                  setStep('crop');
+                }}
+              >
+                <img
+                  src={`https://picui.ogmua.cn/s1/2026/03/05/69a97288f2c99.webp`}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div
+                className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
+                onClick={() => {
+                  setSelectedImage(`https://picui.ogmua.cn/s1/2026/03/05/69a9710468145.webp`);
+                  setStep('crop');
+                }}
+              >
+                <img
+                  src={`https://picui.ogmua.cn/s1/2026/03/05/69a9710468145.webp`}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div
+                className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
+                onClick={() => {
                   setSelectedImage(`https://picui.ogmua.cn/s1/2026/03/05/69a96e4932159.webp`);
                   setStep('crop');
                 }}
