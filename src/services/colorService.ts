@@ -236,19 +236,44 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
     };
     
     // Use proxy for external URLs to avoid CORS/Tainted Canvas issues
-    // Only use the internal proxy if we are NOT on a static host like GitHub Pages
     const isExternal = imageSrc.startsWith('http') && !imageSrc.includes(window.location.host);
     const isStaticHost = window.location.hostname.includes('github.io') || 
                          window.location.hostname.includes('vercel.app') || 
                          window.location.hostname.includes('pages.dev');
 
-    if (isExternal && !isStaticHost) {
-      img.src = `/api/proxy-image?url=${encodeURIComponent(imageSrc)}`;
-    } else if (isExternal && isStaticHost) {
-      // For static hosts, use a public CORS proxy as a fallback for external images
-      // This is necessary because many image hosts (like picui.ogmua.cn) don't have CORS enabled
-      img.crossOrigin = "Anonymous";
-      img.src = `https://corsproxy.io/?${encodeURIComponent(imageSrc)}`;
+    if (isExternal) {
+      const loadWithProxy = async () => {
+        // List of reliable public CORS proxies
+        const proxies = [
+          (url: string) => `/api/proxy-image?url=${encodeURIComponent(url)}`, // Internal proxy (if available)
+          (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, // Very reliable
+          (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        ];
+
+        for (const getProxyUrl of proxies) {
+          try {
+            const proxyUrl = getProxyUrl(imageSrc);
+            // Skip internal proxy if on static host
+            if (proxyUrl.startsWith('/api') && isStaticHost) continue;
+
+            const response = await fetch(proxyUrl, { referrerPolicy: "no-referrer" });
+            if (!response.ok) throw new Error('Proxy failed');
+            
+            const blob = await response.blob();
+            const objectUrl = URL.createObjectURL(blob);
+            img.src = objectUrl;
+            return;
+          } catch (e) {
+            console.warn(`Proxy failed, trying next...`, e);
+          }
+        }
+        
+        // If all proxies fail, try direct load as last resort
+        img.crossOrigin = "Anonymous";
+        img.src = imageSrc;
+      };
+
+      loadWithProxy();
     } else {
       // For data URLs or same-origin
       img.src = imageSrc;
