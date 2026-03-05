@@ -22,7 +22,7 @@ export function NavBar({ onOpenSettings, lightMode }: NavBarProps) {
         style={{
           width: 44,
           height: 44,
-          backgroundColor: glassBg,
+          backgroundColor: 'transparent',
           backdropFilter: "blur(20px)",
           border: `1px solid ${glassBorder}`,
         }}
@@ -40,7 +40,7 @@ export function NavBar({ onOpenSettings, lightMode }: NavBarProps) {
           paddingLeft: 8,
           paddingRight: 8,
           gap: 4,
-          backgroundColor: glassBg,
+          backgroundColor: 'transparent',
           backdropFilter: "blur(20px)",
           border: `1px solid ${glassBorder}`,
         }}
