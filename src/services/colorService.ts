@@ -244,11 +244,13 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
 
     if (isExternal && !isStaticHost) {
       img.src = `/api/proxy-image?url=${encodeURIComponent(imageSrc)}`;
+    } else if (isExternal && isStaticHost) {
+      // For static hosts, use a public CORS proxy as a fallback for external images
+      // This is necessary because many image hosts (like picui.ogmua.cn) don't have CORS enabled
+      img.crossOrigin = "Anonymous";
+      img.src = `https://corsproxy.io/?${encodeURIComponent(imageSrc)}`;
     } else {
-      // For static hosts or data URLs, try direct load with Anonymous crossOrigin
-      if (isExternal) {
-        img.crossOrigin = "Anonymous";
-      }
+      // For data URLs or same-origin
       img.src = imageSrc;
     }
   });
