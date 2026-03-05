@@ -20,7 +20,16 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
       canvas.height = size;
       ctx.drawImage(img, 0, 0, size, size);
 
-      const imageData = ctx.getImageData(0, 0, size, size).data;
+      let imageData;
+      try {
+        imageData = ctx.getImageData(0, 0, size, size).data;
+      } catch (e) {
+        console.error("SecurityError: Canvas is tainted. CORS might be missing on the image host.", e);
+        // Fallback to a neutral color if we can't read pixels
+        resolve("rgb(128, 128, 128)");
+        return;
+      }
+      
       let pixels: number[][] = [];
 
       const extractPixels = (useFilters: boolean) => {
@@ -227,10 +236,19 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
     };
     
     // Use proxy for external URLs to avoid CORS/Tainted Canvas issues
+    // Only use the internal proxy if we are NOT on a static host like GitHub Pages
     const isExternal = imageSrc.startsWith('http') && !imageSrc.includes(window.location.host);
-    if (isExternal) {
+    const isStaticHost = window.location.hostname.includes('github.io') || 
+                         window.location.hostname.includes('vercel.app') || 
+                         window.location.hostname.includes('pages.dev');
+
+    if (isExternal && !isStaticHost) {
       img.src = `/api/proxy-image?url=${encodeURIComponent(imageSrc)}`;
     } else {
+      // For static hosts or data URLs, try direct load with Anonymous crossOrigin
+      if (isExternal) {
+        img.crossOrigin = "Anonymous";
+      }
       img.src = imageSrc;
     }
   });
