@@ -140,17 +140,22 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
         }
         
         // 2. Brightness Scoring (Target: 25% - 95%)
-        if (v >= 0.25 && v <= 0.90) {
+        if (v >= 0.25 && v <= 0.95) {
           score += 50;
         } else if (v < 0.25) {
-          score -= (0.25 - v) * 1000; // Much stronger penalty for black
-        } else if (v > 0.90) {
-          score -= (v - 0.90) * 1000; // Much stronger penalty for white
+          score -= (0.25 - v) * 500; // Reduced penalty for black
+        } else if (v > 0.95) {
+          score -= (v - 0.95) * 200; // Significantly reduced penalty for white
         }
 
-        // 3. Vibrancy Bonus
+        // 3. Vibrancy Bonus - Stronger weight for light images
         // S * V is a good measure of "colorfulness"
-        score += (s * v) * 100;
+        score += (s * v) * 200; 
+        
+        // 4. Saturation boost for very light images
+        if (v > 0.8 && s > 0.05) {
+          score += s * 400;
+        }
 
         if (score > maxScore) {
           maxScore = score;
@@ -162,8 +167,18 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
       console.log("Extracted dominant color:", finalColor, "Score:", maxScore);
       resolve(finalColor);
     };
-    img.onerror = reject;
-    img.src = imageSrc;
+    img.onerror = (err) => {
+      console.error("Image load error in colorService:", err);
+      reject(err);
+    };
+    
+    // Use proxy for external URLs to avoid CORS/Tainted Canvas issues
+    const isExternal = imageSrc.startsWith('http') && !imageSrc.includes(window.location.host);
+    if (isExternal) {
+      img.src = `/api/proxy-image?url=${encodeURIComponent(imageSrc)}`;
+    } else {
+      img.src = imageSrc;
+    }
   });
 }
 

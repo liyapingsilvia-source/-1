@@ -27,7 +27,7 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showBackgroundEditor, setShowBackgroundEditor] = useState(false);
   const [profileBackground, setProfileBackground] = useState<string | null>(null);
-  const [backgroundColor, setBackgroundColor] = useState<string>('#f3f4f6');
+  const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
@@ -49,34 +49,19 @@ export default function App() {
   }, []);
 
   const handleSaveBackground = async (imageData: string) => {
+    console.log("App: handleSaveBackground called");
     setProfileBackground(imageData);
     setShowBackgroundEditor(false);
     
-    // Extract color using the new robust logic
+    // Extract color using the robust logic (now with proxy support)
     try {
       const color = await extractDominantColor(imageData);
-      console.log("App: Extracted color:", color);
+      console.log("App: Extracted color successfully:", color);
       setBackgroundColor(color);
     } catch (error) {
-      console.error("Robust color extraction failed, falling back to simple sampling:", error);
-      // Simple fallback logic
-      const img = new Image();
-      img.crossOrigin = "Anonymous";
-      img.src = imageData;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        canvas.width = 10; canvas.height = 10;
-        ctx.drawImage(img, 0, 0, 10, 10);
-        const data = ctx.getImageData(0, 0, 10, 10).data;
-        let r = 0, g = 0, b = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          r += data[i]; g += data[i+1]; b += data[i+2];
-        }
-        const count = data.length / 4;
-        setBackgroundColor(`rgb(${Math.round(r/count)}, ${Math.round(g/count)}, ${Math.round(b/count)})`);
-      };
+      console.error("App: Color extraction failed even with proxy:", error);
+      // Final fallback to a neutral light color
+      setBackgroundColor('#f8f8f8');
     }
   };
   
