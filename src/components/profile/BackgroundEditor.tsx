@@ -93,7 +93,21 @@ export function BackgroundEditor({ onSave, onClose }: BackgroundEditorProps) {
               <div className="w-6" />
             </div>
             <div className="flex-1 overflow-y-auto p-1 grid grid-cols-3 gap-1">
-              {/* User requested image */}
+              {/* User requested images */}
+              <div
+                className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
+                onClick={() => {
+                  setSelectedImage(`https://picui.ogmua.cn/s1/2026/03/05/69a96e4932159.webp`);
+                  setStep('crop');
+                }}
+              >
+                <img
+                  src={`https://picui.ogmua.cn/s1/2026/03/05/69a96e4932159.webp`}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
               <div
                 className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
                 onClick={() => {
@@ -108,18 +122,23 @@ export function BackgroundEditor({ onSave, onClose }: BackgroundEditorProps) {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              {/* Mock public posts */}
-              {Array.from({ length: 14 }).map((_, i) => (
+              {/* Pink-themed aesthetic photos */}
+              {[
+                'pink-flower', 'cherry-blossom', 'pink-sunset', 'rose-gold', 
+                'pink-aesthetic', 'pastel-pink', 'pink-sky', 'magenta-dream',
+                'pink-neon', 'pink-clouds', 'pink-nature', 'pink-abstract',
+                'pink-vibes', 'pink-style'
+              ].map((seed, i) => (
                 <div
-                  key={i}
+                  key={seed}
                   className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
                   onClick={() => {
-                    setSelectedImage(`https://picsum.photos/seed/${i + 100}/400/600`);
+                    setSelectedImage(`https://picsum.photos/seed/${seed}/400/600`);
                     setStep('crop');
                   }}
                 >
                   <img
-                    src={`https://picsum.photos/seed/${i + 100}/400/600`}
+                    src={`https://picsum.photos/seed/${seed}/400/600`}
                     alt=""
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"

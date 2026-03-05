@@ -139,13 +139,32 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
           score -= (0.25 - s) * 300; // Strong penalty for gray
         }
         
-        // 2. Brightness Scoring (Target: 25% - 95%)
-        if (v >= 0.25 && v <= 0.95) {
+        // 1. Avoid very light colors (Target: 25% - 85% instead of 95%)
+        if (v >= 0.25 && v <= 0.85) {
           score += 50;
         } else if (v < 0.25) {
-          score -= (0.25 - v) * 500; // Reduced penalty for black
-        } else if (v > 0.95) {
-          score -= (v - 0.95) * 200; // Significantly reduced penalty for white
+          score -= (0.25 - v) * 500;
+        } else if (v > 0.85) {
+          score -= (v - 0.85) * 800; // Stronger penalty for very light colors
+        }
+
+        // 2. Forbidden Color Avoidance (Icon Gradient: #F5A0FF, #FE2C55)
+        const forbiddenColors = [
+          [245, 160, 255], // #F5A0FF
+          [254, 44, 85]    // #FE2C55
+        ];
+        let minDistanceToForbidden = Infinity;
+        for (const f of forbiddenColors) {
+          const dist = Math.sqrt(
+            Math.pow(r - f[0], 2) + 
+            Math.pow(g - f[1], 2) + 
+            Math.pow(b - f[2], 2)
+          );
+          if (dist < minDistanceToForbidden) minDistanceToForbidden = dist;
+        }
+        // If color is too close to forbidden (dist < 80), apply heavy penalty
+        if (minDistanceToForbidden < 80) {
+          score -= (80 - minDistanceToForbidden) * 10;
         }
 
         // 3. Vibrancy Bonus - Stronger weight for light images
