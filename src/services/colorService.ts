@@ -235,49 +235,51 @@ export async function extractDominantColor(imageSrc: string): Promise<string> {
       reject(err);
     };
     
-    // Use proxy for external URLs to avoid CORS/Tainted Canvas issues
     const isExternal = imageSrc.startsWith('http') && !imageSrc.includes(window.location.host);
-    const isStaticHost = window.location.hostname.includes('github.io') || 
-                         window.location.hostname.includes('vercel.app') || 
-                         window.location.hostname.includes('pages.dev');
-
-    if (isExternal) {
-      const loadWithProxy = async () => {
-        // List of reliable public CORS proxies
-        const proxies = [
-          (url: string) => `/api/proxy-image?url=${encodeURIComponent(url)}`, // Internal proxy (if available)
-          (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, // Very reliable
-          (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        ];
-
-        for (const getProxyUrl of proxies) {
-          try {
-            const proxyUrl = getProxyUrl(imageSrc);
-            // Skip internal proxy if on static host
-            if (proxyUrl.startsWith('/api') && isStaticHost) continue;
-
-            const response = await fetch(proxyUrl, { referrerPolicy: "no-referrer" });
-            if (!response.ok) throw new Error('Proxy failed');
-            
-            const blob = await response.blob();
-            const objectUrl = URL.createObjectURL(blob);
-            img.src = objectUrl;
-            return;
-          } catch (e) {
-            console.warn(`Proxy failed, trying next...`, e);
-          }
-        }
-        
-        // If all proxies fail, try direct load as last resort
-        img.crossOrigin = "Anonymous";
+    
+    const loadImage = async () => {
+      if (!isExternal) {
         img.src = imageSrc;
-      };
+        return;
+      }
 
-      loadWithProxy();
-    } else {
-      // For data URLs or same-origin
+      // Try direct fetch first (works for CORS-enabled hosts like Picsum)
+      try {
+        const response = await fetch(imageSrc, { mode: 'cors', referrerPolicy: 'no-referrer' });
+        if (response.ok) {
+          const blob = await response.blob();
+          img.src = URL.createObjectURL(blob);
+          return;
+        }
+      } catch (e) {
+        console.warn("Direct fetch failed, trying proxies...", e);
+      }
+
+      // Fallback to proxies for non-CORS hosts
+      const proxies = [
+        (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      ];
+
+      for (const getProxyUrl of proxies) {
+        try {
+          const response = await fetch(getProxyUrl(imageSrc), { referrerPolicy: 'no-referrer' });
+          if (response.ok) {
+            const blob = await response.blob();
+            img.src = URL.createObjectURL(blob);
+            return;
+          }
+        } catch (e) {
+          console.warn("Proxy attempt failed:", e);
+        }
+      }
+
+      // Final fallback: direct load (might taint canvas, but better than nothing)
+      img.crossOrigin = "Anonymous";
       img.src = imageSrc;
-    }
+    };
+
+    loadImage();
   });
 }
 
