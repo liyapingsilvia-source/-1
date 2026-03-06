@@ -107,6 +107,32 @@ export default function App() {
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
+              {/* Smooth Progressive Blur Stack (Bottom 90px only) */}
+              <div 
+                className="absolute left-0 right-0 bottom-0 pointer-events-none overflow-hidden"
+                style={{ height: 90 }}
+              >
+                {[1, 2, 4, 6, 8, 10, 12, 15].map((blur, i, arr) => (
+                  <div
+                    key={i}
+                    className="absolute inset-0"
+                    style={{
+                      backdropFilter: `blur(${blur}px)`,
+                      WebkitBackdropFilter: `blur(${blur}px)`,
+                      maskImage: `linear-gradient(to bottom, 
+                        transparent ${i * (100 / arr.length)}%, 
+                        black ${(i + 1) * (100 / arr.length)}%, 
+                        black ${(i + 2) * (100 / arr.length)}%, 
+                        transparent ${(i + 3) * (100 / arr.length)}%)`,
+                      WebkitMaskImage: `linear-gradient(to bottom, 
+                        transparent ${i * (100 / arr.length)}%, 
+                        black ${(i + 1) * (100 / arr.length)}%, 
+                        black ${(i + 2) * (100 / arr.length)}%, 
+                        transparent ${(i + 3) * (100 / arr.length)}%)`,
+                    }}
+                  />
+                ))}
+              </div>
               {/* Gradient to blend with background color */}
               <div 
                 className="absolute inset-0"
