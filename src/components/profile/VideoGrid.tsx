@@ -8,15 +8,15 @@ interface VideoItem {
 }
 
 const row1: VideoItem[] = [
-  { src: "https://picui.ogmua.cn/s1/2026/02/27/69a16217db30f.webp", views: "16.5K", badge: "Tag text", badgeColor: "rgba(245,245,245,1)" },
-  { src: "https://picui.ogmua.cn/s1/2026/02/27/69a1621d2d812.webp", views: "16.5K", badge: "Tag text", badgeColor: "rgba(254,44,85,1)" },
-  { src: "https://picui.ogmua.cn/s1/2026/02/27/69a1621e0b312.webp", views: "9,126" },
+  { src: "https://free.picui.cn/free/2026/03/13/69b3c9d25f9db.png", views: "16.5K", badge: "Tag text", badgeColor: "rgba(245,245,245,1)" },
+  { src: "https://free.picui.cn/free/2026/03/13/69b3c9d300bd6.png", views: "16.5K", badge: "Tag text", badgeColor: "rgba(254,44,85,1)" },
+  { src: "https://free.picui.cn/free/2026/03/13/69b3c9d33c8e8.png", views: "9,126" },
 ]
 
 const row2: VideoItem[] = [
-  { src: "https://picui.ogmua.cn/s1/2026/02/27/69a1621e408b5.webp", views: "1,202" },
-  { src: "https://picui.ogmua.cn/s1/2026/02/27/69a1621e51e84.webp", views: "712" },
-  { src: "https://picui.ogmua.cn/s1/2026/02/27/69a16274ad2c6.webp", views: "10.1K" },
+  { src: "https://free.picui.cn/free/2026/03/13/69b3c9d34525f.png", views: "1,202" },
+  { src: "https://free.picui.cn/free/2026/03/13/69b3c9d349643.png", views: "712" },
+  { src: "https://free.picui.cn/free/2026/03/13/69b3c9d51d15f.png", views: "10.1K" },
 ]
 
 const row3: VideoItem[] = [
