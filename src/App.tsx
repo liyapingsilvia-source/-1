@@ -11,7 +11,6 @@ import { VideoGrid } from './components/profile/VideoGrid';
 import { BottomNavBar } from './components/profile/BottomNavBar';
 import { SettingsModal } from './components/SettingsModal';
 import { BackgroundEditor } from './components/profile/BackgroundEditor';
-import { extractDominantColor } from './services/colorService';
 
 // --- Types ---
 interface Post {
@@ -27,7 +26,6 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showBackgroundEditor, setShowBackgroundEditor] = useState(false);
   const [profileBackground, setProfileBackground] = useState<string | null>(null);
-  const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
@@ -48,21 +46,9 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleSaveBackground = async (imageData: string) => {
-    console.log("App: handleSaveBackground called");
+  const handleSaveBackground = (imageData: string) => {
     setProfileBackground(imageData);
     setShowBackgroundEditor(false);
-    
-    // Extract color using the robust logic (now with proxy support)
-    try {
-      const color = await extractDominantColor(imageData);
-      console.log("App: Extracted color successfully:", color);
-      setBackgroundColor(color);
-    } catch (error) {
-      console.error("App: Color extraction failed even with proxy:", error);
-      // Final fallback to a neutral light color
-      setBackgroundColor('#f8f8f8');
-    }
   };
   
   // ... rest of the component
@@ -75,7 +61,8 @@ export default function App() {
         style={{ 
           width: 390, 
           height: 844, 
-          backgroundColor,
+          borderRadius: 44,
+          backgroundColor: '#ffffff',
           transform: `scale(${scale})`
         }}
       >
@@ -95,49 +82,38 @@ export default function App() {
         </AnimatePresence>
 
         <div className="flex flex-col flex-1 relative">
-          {/* Profile Background - 390x238 at the very top, bottom layer */}
+          {/* Profile Background - 390x238 matching Figma node 2412:134702 */}
           {profileBackground && (
             <div 
-              className="absolute top-0 left-0 right-0 z-0 overflow-hidden"
+              className="absolute top-0 left-0 right-0 z-0 overflow-clip"
               style={{ height: 238 }}
             >
-              <img 
-                src={profileBackground} 
-                alt="" 
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-              {/* Smooth Progressive Blur Stack (Bottom 90px only) */}
-              <div 
-                className="absolute left-0 right-0 bottom-0 pointer-events-none overflow-hidden"
-                style={{ height: 90 }}
-              >
-                {[1, 2, 4, 6, 8, 10, 12, 15].map((blur, i, arr) => (
-                  <div
-                    key={i}
-                    className="absolute inset-0"
-                    style={{
-                      backdropFilter: `blur(${blur}px)`,
-                      WebkitBackdropFilter: `blur(${blur}px)`,
-                      maskImage: `linear-gradient(to bottom, 
-                        transparent ${i * (100 / arr.length)}%, 
-                        black ${(i + 1) * (100 / arr.length)}%, 
-                        black ${(i + 2) * (100 / arr.length)}%, 
-                        transparent ${(i + 3) * (100 / arr.length)}%)`,
-                      WebkitMaskImage: `linear-gradient(to bottom, 
-                        transparent ${i * (100 / arr.length)}%, 
-                        black ${(i + 1) * (100 / arr.length)}%, 
-                        black ${(i + 2) * (100 / arr.length)}%, 
-                        transparent ${(i + 3) * (100 / arr.length)}%)`,
-                    }}
-                  />
-                ))}
+              {/* Image layer - 154px */}
+              <div className="absolute top-0 left-0 right-0" style={{ height: 154 }}>
+                <img 
+                  src={profileBackground} 
+                  alt="" 
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
               </div>
-              {/* Gradient to blend with background color */}
+              {/* Subtle blur in transition zone near ID */}
+              <div 
+                className="absolute left-0 right-0"
+                style={{ 
+                  top: 95,
+                  height: 60,
+                  backdropFilter: 'blur(6px)',
+                  WebkitBackdropFilter: 'blur(6px)',
+                  maskImage: 'linear-gradient(to bottom, transparent 0%, black 100%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 100%)',
+                }}
+              />
+              {/* White gradient: transition centered at name/ID junction */}
               <div 
                 className="absolute inset-0"
                 style={{ 
-                  background: `linear-gradient(to bottom, transparent 0%, ${backgroundColor} 100%)` 
+                  backgroundImage: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 45%, rgba(255,255,255,0.9) 60%, rgb(255,255,255) 67%)'
                 }}
               />
             </div>
@@ -159,17 +135,13 @@ export default function App() {
                   {/* Profile Header with Avatar, Name, Stats */}
                   <div 
                     className="cursor-pointer"
-                    style={{ 
-                      textShadow: profileBackground ? '0 1px 4px rgba(0,0,0,0.3)' : 'none',
-                      color: profileBackground ? 'white' : 'inherit'
-                    }}
                     onClick={() => setShowBackgroundEditor(true)}
                   >
                     <ProfileHeader />
                   </div>
 
                   {/* Bio & Links */}
-                  <BioLinks lightMode={!!profileBackground} />
+                  <BioLinks lightMode={false} />
 
                   {/* Content section */}
                   <motion.div 
@@ -181,7 +153,7 @@ export default function App() {
                     style={{ gap: 1 }}
                   >
                     {/* Tab bar */}
-                    <IconTabBar lightMode={!!profileBackground} />
+                    <IconTabBar lightMode={false} />
 
                     {/* Video post grid */}
                     <VideoGrid />

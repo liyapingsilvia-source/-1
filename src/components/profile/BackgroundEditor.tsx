@@ -93,63 +93,23 @@ export function BackgroundEditor({ onSave, onClose }: BackgroundEditorProps) {
               <div className="w-6" />
             </div>
             <div className="flex-1 overflow-y-auto p-1 grid grid-cols-3 gap-1">
-              {/* User requested images */}
-              <div
-                className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
-                onClick={() => {
-                  setSelectedImage(`https://picui.ogmua.cn/s1/2026/03/05/69a97288f2c99.webp`);
-                  setStep('crop');
-                }}
-              >
-                <img
-                  src={`https://picui.ogmua.cn/s1/2026/03/05/69a97288f2c99.webp`}
-                  alt=""
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div
-                className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
-                onClick={() => {
-                  setSelectedImage(`https://picui.ogmua.cn/s1/2026/03/05/69a9710468145.webp`);
-                  setStep('crop');
-                }}
-              >
-                <img
-                  src={`https://picui.ogmua.cn/s1/2026/03/05/69a9710468145.webp`}
-                  alt=""
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div
-                className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
-                onClick={() => {
-                  setSelectedImage(`https://picui.ogmua.cn/s1/2026/03/05/69a96e4932159.webp`);
-                  setStep('crop');
-                }}
-              >
-                <img
-                  src={`https://picui.ogmua.cn/s1/2026/03/05/69a96e4932159.webp`}
-                  alt=""
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div
-                className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
-                onClick={() => {
-                  setSelectedImage(`https://picui.ogmua.cn/s1/2026/03/05/69a8e99278eea.webp`);
-                  setStep('crop');
-                }}
-              >
-                <img
-                  src={`https://picui.ogmua.cn/s1/2026/03/05/69a8e99278eea.webp`}
-                  alt=""
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
+              {['ocean-rocks', 'mountain-lake', 'coastal-wave', 'forest-mist'].map((seed) => (
+                <div
+                  key={seed}
+                  className="aspect-square bg-gray-100 cursor-pointer active:opacity-80"
+                  onClick={() => {
+                    setSelectedImage(`https://picsum.photos/seed/${seed}/400/600`);
+                    setStep('crop');
+                  }}
+                >
+                  <img
+                    src={`https://picsum.photos/seed/${seed}/400/400`}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              ))}
               {/* Pink-themed aesthetic photos */}
               {[
                 'pink-flower', 'cherry-blossom', 'pink-sunset', 'rose-gold', 

@@ -8,7 +8,7 @@ interface NavBarProps {
 
 export function NavBar({ onOpenSettings, lightMode }: NavBarProps) {
   const color = lightMode ? "white" : "black";
-  const glassBg = lightMode ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.8)";
+  const glassBg = lightMode ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.8)";
   const glassBorder = lightMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.05)";
 
   return (
@@ -22,7 +22,7 @@ export function NavBar({ onOpenSettings, lightMode }: NavBarProps) {
         style={{
           width: 44,
           height: 44,
-          backgroundColor: 'transparent',
+          backgroundColor: glassBg,
           backdropFilter: "blur(20px)",
           border: `1px solid ${glassBorder}`,
         }}
@@ -40,7 +40,7 @@ export function NavBar({ onOpenSettings, lightMode }: NavBarProps) {
           paddingLeft: 8,
           paddingRight: 8,
           gap: 4,
-          backgroundColor: 'transparent',
+          backgroundColor: glassBg,
           backdropFilter: "blur(20px)",
           border: `1px solid ${glassBorder}`,
         }}
