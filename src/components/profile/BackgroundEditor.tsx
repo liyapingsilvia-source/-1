@@ -92,7 +92,7 @@ export function BackgroundEditor({ onSave, onClose }: BackgroundEditorProps) {
               <span className="text-[17px] font-bold">Recents</span>
               <div className="w-6" />
             </div>
-            <div className="flex-1 overflow-y-auto p-1 grid grid-cols-3 gap-1">
+            <div className="flex-1 overflow-y-auto no-scrollbar p-1 grid grid-cols-3 gap-1">
               {['ocean-rocks', 'mountain-lake', 'coastal-wave', 'forest-mist'].map((seed) => (
                 <div
                   key={seed}

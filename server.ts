@@ -1,13 +1,18 @@
 import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import axios from "axios";
 
 dotenv.config();
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  /** 与仓库本地预览约定一致，默认 8080（可用 PORT 覆盖） */
+  const PORT = Number(process.env.PORT) || 8080;
 
   // Increase body size limit for base64 images
   app.use(express.json({ limit: '10mb' }));
@@ -41,8 +46,13 @@ async function startServer() {
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
+      root: path.resolve(__dirname),
+      configFile: path.resolve(__dirname, "vite.config.ts"),
+      server: {
+        middlewareMode: true,
+      },
+      // MPA: index.html + tiktok-profile-tux.html 等多入口
+      appType: "mpa",
     });
     app.use(vite.middlewares);
   } else {
@@ -50,8 +60,20 @@ async function startServer() {
     app.use(express.static("dist"));
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
+  const httpServer = app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`TUX 个人页: http://localhost:${PORT}/tiktok-profile-tux.html`);
+  });
+
+  httpServer.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(
+        `[dev] 端口 ${PORT} 已被占用。请关闭占用进程或执行: PORT=8090 npm run dev`,
+      );
+    } else {
+      console.error(err);
+    }
+    process.exit(1);
   });
 }
 

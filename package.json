@@ -5,12 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
+    "dev:vite": "vite --port 8080 --host",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "vite preview --port 8080 --host",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@byted-tiktok/tux-color": "^1.2.25",
+    "@byted-tiktok/tux-icons": "^2.39.53",
+    "@byted-tiktok/tux-web": "^1.5.5",
     "@google/genai": "^1.29.0",
     "@imgly/background-removal": "^1.7.0",
     "@tailwindcss/vite": "^4.1.14",

@@ -25,6 +25,18 @@ const row3: VideoItem[] = [
   { src: "https://picsum.photos/seed/9/400/600", views: "5,504" },
 ]
 
+const row4: VideoItem[] = [
+  { src: "https://picsum.photos/seed/10/400/600", views: "2,341" },
+  { src: "https://picsum.photos/seed/11/400/600", views: "18.7K" },
+  { src: "https://picsum.photos/seed/12/400/600", views: "4,028" },
+]
+
+const row5: VideoItem[] = [
+  { src: "https://picsum.photos/seed/13/400/600", views: "7,615" },
+  { src: "https://picsum.photos/seed/14/400/600", views: "31.2K" },
+  { src: "https://picsum.photos/seed/15/400/600", views: "1,893" },
+]
+
 function VideoThumbnail({ item }: { item: VideoItem; key?: any }) {
   const isDraftBadge = item.badge && item.badgeColor === "rgba(245,245,245,1)"
   const isPinnedBadge = item.badge && item.badgeColor === "rgba(254,44,85,1)"
@@ -111,7 +123,7 @@ function VideoRow({ items }: { items: VideoItem[] }) {
   )
 }
 
-export const profilePosts: VideoItem[] = [...row1, ...row2, ...row3];
+export const profilePosts: VideoItem[] = [...row1, ...row2, ...row3, ...row4, ...row5];
 
 export function VideoGrid() {
   return (
@@ -122,6 +134,8 @@ export function VideoGrid() {
       <VideoRow items={row1} />
       <VideoRow items={row2} />
       <VideoRow items={row3} />
+      <VideoRow items={row4} />
+      <VideoRow items={row5} />
     </div>
   )
 }
